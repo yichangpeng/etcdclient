@@ -212,14 +212,12 @@ bool EtcdClient::watch(std::vector<ConfigItem> &config_item_vector)
 {
     ::etcdserverpb::WatchResponse response;
     if(_etcd->Watch(response).ok()){
-        std::cerr<< "begin_watch:" << response.DebugString() << std::endl;
         ::google::protobuf::RepeatedPtrField< ::mvccpb::Event > *elist = response.mutable_events();
-       for(::google::protobuf::RepeatedPtrField< ::mvccpb::Event >::const_iterator it =
+        for(::google::protobuf::RepeatedPtrField< ::mvccpb::Event >::const_iterator it =
             elist->begin(); it != elist->end(); it++)
         {
             if (!it->has_kv())
             {
-                std::cerr << "no kv" << std::endl;
                 continue;
             }
 
@@ -235,7 +233,12 @@ bool EtcdClient::watch(std::vector<ConfigItem> &config_item_vector)
             }
             else if (::mvccpb::Event_EventType::Event_EventType_PUT == it->type())
             {
-                km.operation = KEY_OPRATION::KEY_OPRATION_UPDATE;
+                if (it->has_prev_kv()){
+                    km.operation = KEY_OPRATION::KEY_OPRATION_ADD;
+                }
+                else{
+                    km.operation = KEY_OPRATION::KEY_OPRATION_UPDATE;
+                }
             }
             config_item_vector.push_back(km);
         }

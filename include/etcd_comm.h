@@ -10,6 +10,7 @@ enum class KEY_OPRATION : unsigned int
     KEY_OPRATION_NONE   = 0,         // 无操作
     KEY_OPRATION_UPDATE = 1,         // 更新
     KEY_OPRATION_DELETE = 2,         // 删除
+    KEY_OPRATION_ADD = 3,         // 新增
 };
 
 struct ConfigItem
